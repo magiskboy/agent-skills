@@ -7,15 +7,20 @@ Each skill is a self-contained directory with a `SKILL.md` entry point. The agen
 Install any skill with the [skills.sh](https://www.skills.sh/) CLI:
 
 ```bash
-npx skills add  https://github.com/magiskboy/agent-skills --skill <skill-name>
+# Well-known registry (recommended after release)
+npx skills add https://skills.nkthanh.dev --skill <skill-name>
+
+# GitHub source
+npx skills add https://github.com/magiskboy/agent-skills --skill <skill-name>
 ```
 
 ## Skills
 
 | Skill | Description | Install |
 |-------|-------------|---------|
-| [research](research/) | Research and knowledge-building methodology — source discovery, deep understanding, note distillation, knowledge graphs, claim challenge, and vault curation. | `npx skills add https://github.com/magiskboy/agent-skills --skill research` |
-| [tauri-apps-development](tauri-apps-development/) | Conventions and workflows for Tauri v2 desktop apps (React + TypeScript frontend, Rust backend) — IPC, state, SQLite, capabilities, testing, and release. | `npx skills add https://github.com/magiskboy/agent-skills --skill tauri-apps-development` |
+| [research](research/) | Research and knowledge-building methodology — source discovery, deep understanding, note distillation, knowledge graphs, claim challenge, and vault curation. | `npx skills add https://skills.nkthanh.dev --skill research` |
+| [report-builder](report-builder/) | Build polished reports in Markdown or HTML — slides, charts, tables, diagrams, maps, math, and more via routed client libraries. | `npx skills add https://skills.nkthanh.dev --skill report-builder` |
+| [tauri-apps-development](tauri-apps-development/) | Conventions and workflows for Tauri v2 desktop apps (React + TypeScript frontend, Rust backend) — IPC, state, SQLite, capabilities, testing, and release. | `npx skills add https://skills.nkthanh.dev --skill tauri-apps-development` |
 
 ## Install locally
 
@@ -30,6 +35,29 @@ ln -s "$(pwd)/tauri-apps-development" ~/.cursor/skills/tauri-apps-development
 Alternatively, copy a skill directory into `~/.cursor/skills/<skill-name>/`.
 
 > **Note:** Do not put custom skills in `~/.cursor/skills-cursor/` — that directory is reserved for Cursor's built-in skills.
+
+## Release
+
+Publishing is automated via GitHub Actions when you publish a GitHub Release:
+
+1. Bump version in the skill's `SKILL.md` frontmatter if needed.
+2. Create and push a tag, e.g. `git tag v0.1.0 && git push origin v0.1.0`.
+3. Publish a release for that tag on GitHub.
+
+The [release workflow](.github/workflows/release.yml) will:
+
+- Pack every top-level skill directory (any folder with `SKILL.md`) into `dist/*.tar.gz`
+- Upload archives to the GitHub Release
+- Generate `deploy/.well-known/agent-skills/index.json` and deploy it to GitHub Pages
+
+After the first release, enable **GitHub Pages** (`Settings → Pages → Source: GitHub Actions`) and point `skills.nkthanh.dev` to Pages (CNAME is in `deploy/CNAME`).
+
+To validate locally before releasing:
+
+```bash
+python3 -m pip install -r scripts/requirements.txt
+python3 scripts/publish.py --version v0.1.0
+```
 
 ## Add a new skill
 
