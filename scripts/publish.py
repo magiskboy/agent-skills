@@ -7,6 +7,8 @@ import argparse
 import hashlib
 import json
 import sys
+import gzip
+import io
 import tarfile
 from pathlib import Path
 
@@ -60,11 +62,26 @@ def normalize_description(description: str, skill_name: str) -> str:
 
 
 def pack_skill(skill_dir: Path, output_path: Path) -> None:
+    """Pack a skill directory into a reproducible .tar.gz (fixed mtimes for stable digests)."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    with tarfile.open(output_path, "w:gz") as archive:
+    tar_buffer = io.BytesIO()
+    with tarfile.open(fileobj=tar_buffer, mode="w", format=tarfile.GNU_FORMAT) as archive:
         for path in sorted(skill_dir.rglob("*")):
-            if path.is_file():
-                archive.add(path, arcname=path.relative_to(skill_dir).as_posix())
+            if not path.is_file():
+                continue
+            arcname = path.relative_to(skill_dir).as_posix()
+            info = archive.gettarinfo(path, arcname=arcname)
+            info.mtime = 0
+            info.uid = 0
+            info.gid = 0
+            info.uname = ""
+            info.gname = ""
+            with path.open("rb") as handle:
+                archive.addfile(info, handle)
+    tar_buffer.seek(0)
+    with output_path.open("wb") as raw:
+        with gzip.GzipFile(fileobj=raw, mode="wb", compresslevel=9, mtime=0) as gz:
+            gz.write(tar_buffer.getvalue())
 
 
 def sha256_digest(path: Path) -> str:
