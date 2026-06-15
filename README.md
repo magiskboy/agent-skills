@@ -21,6 +21,7 @@ npx skills add https://github.com/magiskboy/agent-skills --skill <skill-name>
 | [research](research/) | Research and knowledge-building methodology — source discovery, deep understanding, note distillation, knowledge graphs, claim challenge, and vault curation. | `npx skills add https://skills.nkthanh.dev --skill research` |
 | [report-builder](report-builder/) | Build polished reports in Markdown or HTML — slides, charts, tables, diagrams, maps, math, and more via routed client libraries. | `npx skills add https://skills.nkthanh.dev --skill report-builder` |
 | [tauri-apps-development](tauri-apps-development/) | Conventions and workflows for Tauri v2 desktop apps (React + TypeScript frontend, Rust backend) — IPC, state, SQLite, capabilities, testing, and release. | `npx skills add https://skills.nkthanh.dev --skill tauri-apps-development` |
+| [dockerfile-builder](dockerfile-builder/) | Production-ready multi-stage Dockerfiles for Python (uv), Vite React, Next.js, and Python+Vite bundled monorepos — nginx SPA hosting, OCI labels, image size optimization. | `npx skills add https://skills.nkthanh.dev --skill dockerfile-builder` |
 
 ## Install locally
 
