@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Report title — replace me</title>
+  <!--
+    Single-file HTML report scaffold — LIGHT, scientific/academic aesthetic.
+    - Light background, serif body + sans-serif headings, one calm navy accent.
+    - Auto-numbered sections (h2 = 1, 2; h3 = 1.1) and figures via CSS counters.
+    - Edit the CSS variables in :root to rebrand. Replace the content in <main>.
+    - Add CDN libraries only where needed (see the per-library reference files):
+      <link> in <head>, <script> before </body>. Prefer LIGHT library themes.
+  -->
+  <style>
+    :root {
+      /* color — light, low-chroma, print-friendly */
+      --bg: #ffffff;
+      --surface: #f7f8fa;
+      --fg: #14181f;
+      --muted: #5b6573;
+      --accent: #1b4d8a;        /* calm scholarly navy */
+      --accent-weak: #eef3fa;
+      --good: #1f7a4d;
+      --bad: #b4232a;
+      --border: #dfe3e8;
+
+      /* type & layout */
+      --font-body: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+      --font-head: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, "Liberation Mono", monospace;
+      --maxw: 70ch;
+      --fs-base: 18px;
+
+      /* spacing scale (4 / 8 / 16 / 24 / 40 / 64) */
+      --s1: .25rem; --s2: .5rem; --s3: 1rem; --s4: 1.5rem; --s5: 2.5rem; --s6: 4rem;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      font-size: var(--fs-base);
+      line-height: 1.65;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* counters for scientific numbering */
+    main { max-width: var(--maxw); margin-inline: auto; padding: var(--s6) var(--s3);
+           counter-reset: section figure tbl; }
+
+    h1, h2, h3, h4 { font-family: var(--font-head); line-height: 1.2;
+                     margin: var(--s5) 0 var(--s3); font-weight: 700; color: var(--fg); }
+    h1 { font-size: 2.1rem; letter-spacing: -0.01em; margin-top: 0; }
+    h2 { font-size: 1.5rem; padding-bottom: var(--s2); border-bottom: 1px solid var(--border);
+         counter-increment: section; counter-reset: subsection; }
+    h2::before { content: counter(section) ".\00a0\00a0"; color: var(--accent); font-weight: 700; }
+    h3 { font-size: 1.2rem; counter-increment: subsection; }
+    h3::before { content: counter(section) "." counter(subsection) "\00a0\00a0"; color: var(--accent); }
+    h2.no-count, h3.no-count { counter-increment: none; }
+    h2.no-count::before, h3.no-count::before { content: none; }
+    h2 + p, h3 + p { margin-top: 0; }
+
+    p, li { max-width: var(--maxw); }
+    /* justified body with hyphenation = journal look; safe because hyphens fill gaps */
+    p { margin: 0 0 var(--s3); text-align: justify; hyphens: auto; }
+    ul, ol { margin: 0 0 var(--s3); padding-left: 1.4em; }
+    li { margin: var(--s1) 0; }
+
+    .subtitle { font-family: var(--font-head); color: var(--muted); font-size: 1.02rem;
+                margin-top: calc(-1 * var(--s2)); text-align: left; }
+    .abstract { background: var(--surface); border: 1px solid var(--border);
+                border-radius: var(--radius); padding: var(--s4); margin: var(--s4) 0; }
+    .abstract h2 { border: none; padding: 0; font-size: 1.05rem; margin: 0 0 var(--s2); }
+    .abstract h2::before { content: none; }
+
+    a { color: var(--accent); text-underline-offset: 2px; }
+    strong { font-weight: 700; }
+
+    /* callouts */
+    .note, .warn { border-left: 3px solid var(--accent); background: var(--accent-weak);
+                   padding: var(--s3) var(--s4); border-radius: var(--radius); margin: var(--s4) 0; }
+    .note p:last-child, .warn p:last-child { margin-bottom: 0; }
+    .warn { border-left-color: var(--bad); background: #fcf1f1; }
+
+    /* KPI / key-number row */
+    .kpis { display: flex; flex-wrap: wrap; gap: var(--s3); margin: var(--s4) 0; }
+    .kpi { flex: 1 1 150px; background: var(--surface); border: 1px solid var(--border);
+           border-radius: var(--radius); padding: var(--s3) var(--s4); }
+    .kpi .value { font-family: var(--font-head); font-size: 1.7rem; font-weight: 700;
+                  font-variant-numeric: tabular-nums; }
+    .kpi .label { font-family: var(--font-head); color: var(--muted); font-size: .85rem; }
+    .good { color: var(--good); } .bad { color: var(--bad); }
+
+    /* tables */
+    table { border-collapse: collapse; width: 100%; margin: var(--s2) 0 var(--s4);
+            font-family: var(--font-head); font-size: .92rem; }
+    caption { caption-side: top; counter-increment: tbl; text-align: left;
+              color: var(--muted); font-size: .9rem; margin-bottom: var(--s2); }
+    caption::before { content: "Bảng " counter(tbl) ". "; font-weight: 700; color: var(--fg); }
+    th, td { padding: var(--s2) var(--s3); border-bottom: 1px solid var(--border); text-align: left; }
+    thead th { border-bottom: 2px solid var(--fg); font-weight: 700; }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+    /* figures (auto-numbered captions) */
+    figure { margin: var(--s4) 0; }
+    figcaption { counter-increment: figure; font-family: var(--font-head);
+                 color: var(--muted); font-size: .9rem; margin-top: var(--s2); }
+    figcaption::before { content: "Hình " counter(figure) ". "; font-weight: 700; color: var(--fg); }
+
+    /* code */
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+          padding: var(--s3); overflow: auto; font-size: .88rem; }
+    code { font-family: var(--mono); }
+    p code, li code { background: var(--surface); padding: .1em .35em; border-radius: 4px; font-size: .9em; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: var(--s5) 0; }
+
+    /* print to PDF */
+    @media print {
+      body { font-size: 11pt; }
+      main { max-width: none; padding: 0; }
+      a { color: inherit; text-decoration: none; }
+      .note, .warn, .kpi, figure, table { break-inside: avoid; }
+      h2, h3 { break-after: avoid; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Report title — replace me</h1>
+    <p class="subtitle">Authors / team — Affiliation — YYYY-MM-DD</p>
+
+    <!-- Abstract: unnumbered, scientific convention -->
+    <section class="abstract" aria-label="Abstract">
+      <h2 class="no-count">Tóm tắt</h2>
+      <p>
+        State the question, method, key result (with the number), and conclusion
+        in 4–6 sentences. The reader should be able to stop here and know the finding.
+      </p>
+    </section>
+
+    <section id="intro">
+      <h2>Giới thiệu</h2>
+      <p>Bối cảnh, mục tiêu, phạm vi và đóng góp của báo cáo.</p>
+    </section>
+
+    <section id="methods">
+      <h2>Phương pháp</h2>
+      <p>Dữ liệu, quy trình xử lý, và giả định. Mỗi bước có thể tái lập.</p>
+    </section>
+
+    <section id="results">
+      <h2>Kết quả</h2>
+
+      <h3>Phát hiện chính phát biểu dưới dạng luận điểm</h3>
+      <p>Bằng chứng trước, chi tiết sau. Mỗi con số kèm nguồn.</p>
+
+      <figure>
+        <table>
+          <caption>caption nêu insight, không chỉ nêu chủ đề.</caption>
+          <thead>
+            <tr><th>Hạng mục</th><th class="num">Trước</th><th class="num">Sau</th><th class="num">Δ</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>chỉ số A</td><td class="num">1.900</td><td class="num">240</td><td class="num good">−87%</td></tr>
+            <tr><td>chỉ số B</td><td class="num">310</td><td class="num">305</td><td class="num">−2%</td></tr>
+          </tbody>
+        </table>
+      </figure>
+
+      <!-- chart/diagram widgets go in their own <figure> -->
+    </section>
+
+    <section id="discussion">
+      <h2>Thảo luận</h2>
+      <p>Diễn giải kết quả, so sánh với công trình liên quan, hạn chế.</p>
+    </section>
+
+    <section id="conclusion">
+      <h2>Kết luận</h2>
+      <p>Kết luận và hướng tiếp theo, cụ thể và có thể hành động.</p>
+    </section>
+
+    <hr>
+
+    <section id="references">
+      <h2 class="no-count">Tài liệu tham khảo</h2>
+      <ol>
+        <li>Tác giả. <em>Tiêu đề</em>. Nguồn, năm. URL.</li>
+      </ol>
+    </section>
+  </main>
+
+  <!-- Library CDN scripts + init go here, before </body>. Add only what you use;
+       prefer LIGHT themes (Prism default, Mermaid 'default'/'neutral', reveal 'white'/'serif'). -->
+</body>
+</html>
