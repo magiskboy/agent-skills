@@ -7,6 +7,8 @@ Each skill is a self-contained directory with a `SKILL.md` entry point. The agen
 Install any skill with the [skills.sh](https://www.skills.sh/) CLI:
 
 ```bash
+# Browse the catalog: https://skills.nkthanh.dev
+
 # Well-known registry (recommended after release)
 npx skills add https://skills.nkthanh.dev --skill <skill-name>
 
@@ -49,7 +51,7 @@ The [release workflow](.github/workflows/release.yml) will:
 
 - Pack every top-level skill directory (any folder with `SKILL.md`) into `dist/*.tar.gz`
 - Upload archives to the GitHub Release
-- Generate `deploy/.well-known/agent-skills/index.json` and deploy it to GitHub Pages
+- Generate `deploy/.well-known/agent-skills/index.json`, `deploy/index.html`, and per-skill pages under `deploy/skills/` for GitHub Pages
 
 After the first release, enable **GitHub Pages** (`Settings → Pages → Source: GitHub Actions`) and point `skills.nkthanh.dev` to Pages (CNAME is in `deploy/CNAME`).
 

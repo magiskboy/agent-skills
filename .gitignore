@@ -1,2 +1,6 @@
 dist/
 deploy/.well-known/
+deploy/index.html
+deploy/assets/
+deploy/assets/site.js
+deploy/skills/

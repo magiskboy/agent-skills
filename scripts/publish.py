@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pack skill directories and generate the well-known discovery index."""
+"""Pack skill directories, generate the well-known discovery index, and build the Pages site."""
 
 from __future__ import annotations
 
@@ -11,6 +11,8 @@ import tarfile
 from pathlib import Path
 
 import yaml
+
+from skill_pages import SkillPage, generate_site, parse_skill_page
 
 ROOT = Path(__file__).resolve().parent.parent
 SCHEMA = "https://schemas.agentskills.io/discovery/0.2.0/schema.json"
@@ -91,9 +93,11 @@ def publish(version: str, repo: str, root: Path, dist_dir: Path, deploy_dir: Pat
         raise RuntimeError("No skills found (expected top-level directories with SKILL.md)")
 
     index_skills: list[dict] = []
+    site_skills: list[SkillPage] = []
 
     for skill_dir in skill_dirs:
-        meta = parse_frontmatter(skill_dir)
+        skill_page = parse_skill_page(skill_dir)
+        meta = skill_page.meta
         skill_name = meta.get("name") or skill_dir.name
         if skill_name != skill_dir.name:
             print(
@@ -102,7 +106,17 @@ def publish(version: str, repo: str, root: Path, dist_dir: Path, deploy_dir: Pat
                 file=sys.stderr,
             )
 
-        description = normalize_description(str(meta.get("description", "")), skill_name)
+        description = normalize_description(skill_page.description, skill_dir.name)
+        site_skills.append(
+            SkillPage(
+                dir_name=skill_page.dir_name,
+                name=str(skill_name),
+                description=description,
+                meta=meta,
+                body_md=skill_page.body_md,
+            )
+        )
+
         archive_path = dist_dir / f"{skill_dir.name}.tar.gz"
         pack_skill(skill_dir, archive_path)
         digest = sha256_digest(archive_path)
@@ -123,6 +137,8 @@ def publish(version: str, repo: str, root: Path, dist_dir: Path, deploy_dir: Pat
     index_path.parent.mkdir(parents=True, exist_ok=True)
     index_path.write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8")
     print(f"wrote {index_path.relative_to(root)}")
+
+    generate_site(deploy_dir, site_skills, repo)
 
     return index
 
